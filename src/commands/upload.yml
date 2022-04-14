@@ -47,7 +47,7 @@ parameters:
   aliasdescription:
     description: A printf string to generate the alias description.
     type: string
-    default: "%.20s %s %.60s"
+    default: "%.20s %s %.120s"
   displayname:
     description: A string to show for the step name.
     type: string
