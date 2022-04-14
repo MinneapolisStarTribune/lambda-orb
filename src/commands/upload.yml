@@ -1,0 +1,70 @@
+description: |
+  Upload your function source code to Lambda.
+
+parameters:
+  aws-region:
+    description: Env var of AWS region to operate in
+    type: env_var_name
+    default: AWS_REGION
+  aws-access-key-id:
+    description: |
+      AWS access key id for IAM role. Set this to the name of
+      the environment variable you will use to hold this
+      value, i.e. AWS_ACCESS_KEY.
+    type: env_var_name
+    default: AWS_ACCESS_KEY_ID
+  aws-secret-access-key:
+    description: |
+      AWS secret key for IAM role. Set this to the name of
+      the environment variable you will use to hold this
+      value, i.e. AWS_SECRET_ACCESS_KEY.
+    type: env_var_name
+    default: AWS_SECRET_ACCESS_KEY
+  path:
+    description: The root of the function source code to upload.
+    type: string
+    default: src/
+  arn:
+    description: The ARN of an existing function to update.
+    type: string
+  branchalias:
+    description: |
+      Create/update alias to new version with git branch name. Use a
+      branch named "prod" to maintain a "prod" alias, for example.
+    type: boolean
+    default: true
+  tagalias:
+    description: |
+      Create/update alias to new version with the git tag, if any.
+    type: boolean
+    default: true
+  commitalias:
+    description: |
+      Create/update alias to new version with the first eight characters
+      of the git commit hash, in the form git-12345678
+    type: boolean
+    default: false
+  aliasdescription:
+    description: A printf string to generate the alias description.
+    type: string
+    default: "%.20s %s %.60s"
+  displayname:
+    description: A string to show for the step name.
+    type: string
+    default: Upload Lambda Code to AWS
+
+steps:
+  - aws/setup:
+      aws-region: <<parameters.aws-region>>
+      aws-access-key-id: <<parameters.aws-access-key-id>>
+      aws-secret-access-key: <<parameters.aws-secret-access-key>>
+  - run:
+      name: <<parameters.displayname>>
+      command: <<include(commands/run.sh)>>
+      environment:
+        SRCPATH: <<parameters.path>>
+        FUNCARN: <<parameters.arn>>
+        ALIASBR: <<parameters.branchalias>>
+        ALIASTG: <<parameters.tagalias>>
+        ALIASCM: <<parameters.commitalias>>
+        DESCFMT: <<parameters.aliasdescription>>
